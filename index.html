@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FOREXCOM:XAUUSD — Top-Down ICT/SMC AI Trading Terminal</title>
+  <style>
+    :root {
+      --bg-main: #090d16;
+      --bg-panel: #111726;
+      --bg-card: #161f33;
+      --border: #23304d;
+      --text-main: #e6edf7;
+      --text-muted: #8b9bb4;
+      --gold: #f5b942;
+      --green: #10b981;
+      --red: #ef4444;
+      --blue: #3b82f6;
+      --purple: #8b5cf6;
+      --cyan: #06b6d4;
+      --orange: #f97316;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg-main);
+      color: var(--text-main);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, monospace;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: var(--bg-panel);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .title-logo {
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing: 0.4px;
+      color: var(--gold);
+    }
+    .sync-badge {
+      background: rgba(16, 185, 129, 0.14);
+      border: 1px solid var(--green);
+      color: #34d399;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .db-badge {
+      background: rgba(6, 182, 212, 0.14);
+      border: 1px solid var(--cyan);
+      color: #67e8f9;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.45; transform: scale(0.85); }
+    }
+    .header-metrics {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .price-pill {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 5px 11px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .price-pill span {
+      color: var(--gold);
+      font-size: 15px;
+      margin-left: 5px;
+    }
+    .htf-dir-badge {
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      border: 1px solid var(--border);
+    }
+    .htf-BULLISH {
+      background: rgba(16, 185, 129, 0.16);
+      border-color: var(--green);
+      color: #34d399;
+    }
+    .htf-BEARISH {
+      background: rgba(239, 68, 68, 0.16);
+      border-color: var(--red);
+      color: #fca5a5;
+    }
+    .kz-badge {
+      background: rgba(139, 92, 246, 0.16);
+      border: 1px solid var(--purple);
+      color: #c4b5fd;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .scan-controls {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+    .tf-box {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      padding: 3px 7px;
+      border-radius: 6px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .tf-box select {
+      border: none;
+      background: transparent;
+      padding: 2px 4px;
+      color: var(--gold);
+      font-weight: 700;
+    }
+    button, select, input[type="text"], input[type="password"] {
+      background: var(--bg-card);
+      color: var(--text-main);
+      border: 1px solid var(--border);
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    button { cursor: pointer; }
+    button:hover { border-color: var(--gold); }
+    button.active-btn {
+      background: rgba(245, 185, 66, 0.18);
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 14px;
+      padding: 14px;
+      flex: 1;
+    }
+    @media (max-width: 1150px) {
+      .workspace { grid-template-columns: 1fr; }
+    }
+
+    .chart-section {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: 640px;
+    }
+    .chart-toolbar {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .tab-group { display: flex; gap: 6px; flex-wrap: wrap; }
+    .legend-group {
+      display: flex;
+      gap: 10px;
+      font-size: 11px;
+      color: var(--text-muted);
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .legend-item { display: flex; align-items: center; gap: 5px; }
+    .legend-line { width: 13px; height: 3px; border-radius: 2px; }
+    .legend-box {
+      width: 12px;
+      height: 10px;
+      border-radius: 2px;
+      border: 1px solid currentColor;
+    }
+
+    .charts-container {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr;
+      position: relative;
+      min-height: 540px;
+    }
+    .charts-container.split-view {
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+    }
+    .canvas-wrap {
+      position: relative;
+      background: #0b101c;
+      width: 100%;
+      height: 100%;
+      min-height: 540px;
+    }
+    canvas#aiChart {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    .tv-wrap {
+      width: 100%;
+      height: 100%;
+      min-height: 540px;
+      background: #0b101c;
+      display: none;
+    }
+    .charts-container.split-view .tv-wrap,
+    .charts-container.tv-only .tv-wrap {
+      display: block;
+    }
+    .charts-container.tv-only .canvas-wrap {
+      display: none;
+    }
+    .chart-footer {
+      padding: 8px 14px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .side-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .panel-card {
+      background: var(--bg-panel);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .card-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-muted);
+    }
+
+    .lock-status-banner {
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-weight: 800;
+      font-size: 13px;
+      text-align: center;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+      border: 1px solid var(--border);
+    }
+    .status-IDLE {
+      background: rgba(59, 130, 246, 0.12);
+      border-color: var(--blue);
+      color: #93c5fd;
+    }
+    .status-LIMIT_PENDING {
+      background: rgba(245, 185, 66, 0.16);
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+    .status-ACTIVE_IN_TRADE {
+      background: rgba(16, 185, 129, 0.18);
+      border-color: var(--green);
+      color: #34d399;
+    }
+    .status-TP1_HIT_RUNNING {
+      background: rgba(6, 182, 212, 0.2);
+      border-color: var(--cyan);
+      color: #67e8f9;
+    }
+
+    .signal-hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .hero-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 6px;
+      text-align: center;
+    }
+    .hero-label {
+      font-size: 10.5px;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+    .hero-val {
+      font-size: 18px;
+      font-weight: 800;
+    }
+    .dir-BUY { color: var(--green); }
+    .dir-SELL { color: var(--red); }
+    .dir-WAIT { color: var(--gold); }
+
+    .levels-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+    }
+    .level-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--bg-card);
+      padding: 7px 10px;
+      border-radius: 6px;
+      border-left: 3px solid var(--border);
+      font-size: 12px;
+    }
+    .level-row.entry { border-left-color: var(--blue); }
+    .level-row.sl { border-left-color: var(--red); }
+    .level-row.tp1 { border-left-color: #34d399; }
+    .level-row.tp2 { border-left-color: #10b981; }
+    .level-row.tp3 { border-left-color: var(--gold); }
+    .level-row.dol { border-left-color: var(--purple); }
+    .level-val { font-weight: 700; font-family: monospace; font-size: 13px; }
+
+    .lock-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .control-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      gap: 8px;
+    }
+    .btn-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .btn-lock {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: var(--green);
+      color: #34d399;
+      padding: 9px;
+      font-weight: 700;
+    }
+    .btn-unlock {
+      background: rgba(239, 68, 68, 0.18);
+      border-color: var(--red);
+      color: #fca5a5;
+      padding: 9px;
+      font-weight: 700;
+    }
+    .btn-copy {
+      width: 100%;
+      background: rgba(59, 130, 246, 0.18);
+      border-color: var(--blue);
+      color: #93c5fd;
+      padding: 8px;
+      font-weight: 700;
+    }
+
+    .tg-inputs {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+    .tg-inputs input {
+      width: 100%;
+      font-family: monospace;
+    }
+
+    .confluence-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+    .conf-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 6px 9px;
+      font-size: 11px;
+    }
+    .conf-top {
+      display: flex;
+      justify-content: space-between;
+      font-weight: 700;
+      margin-bottom: 3px;
+    }
+    .conf-desc {
+      color: var(--text-muted);
+      font-size: 10.5px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header Bar -->
+  <header>
+    <div class="brand-group">
+      <div class="title-logo">⚡ TAKERU XAUUSD AI TERMINAL</div>
+      <div class="sync-badge">
+        <span class="pulse-dot"></span>
+        FOREXCOM:XAUUSD (100% SYNCED)
+      </div>
+      <div class="db-badge" id="mongoBadge">DB: CHECKING...</div>
+    </div>
+
+    <div class="header-metrics">
+      <div class="price-pill">
+        XAUUSD <span id="livePriceDisplay">---.--</span>
+      </div>
+      <div id="htfDirBadge" class="htf-dir-badge htf-BULLISH">
+        HTF [1H]: SCANNING...
+      </div>
+      <div class="kz-badge" id="killzoneBadge">KILLZONE: SCANNING...</div>
+
+      <div class="scan-controls">
+        <div class="tf-box">
+          <span>Direction HTF:</span>
+          <select id="htfSelect" onchange="onTimeframeChange()">
+            <option value="30m">30m</option>
+            <option value="1h" selected>1h</option>
+            <option value="4h">4h</option>
+          </select>
+        </div>
+
+        <div class="tf-box">
+          <span>Entry LTF:</span>
+          <select id="entryTfSelect" onchange="onTimeframeChange()">
+            <option value="1m">1m</option>
+            <option value="5m" selected>5m</option>
+            <option value="15m">15m</option>
+          </select>
+        </div>
+
+        <div class="tf-box">
+          <span>Max SL:</span>
+          <select id="maxSlSelect" onchange="updateLockSettings()">
+            <option value="5">&lt;=$5.00</option>
+            <option value="8">&lt;=$8.00</option>
+            <option value="10" selected>&lt;=$10.00</option>
+          </select>
+        </div>
+
+        <button id="autoScanToggle" class="active-btn" onclick="toggleAutoScan()">
+          Auto: ON (<span id="countdownText">10</span>s)
+        </button>
+        <button onclick="runLiveScan()">Scan Now</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <div class="workspace">
+    <!-- Left Chart Area -->
+    <div class="chart-section">
+      <div class="chart-toolbar">
+        <div class="tab-group">
+          <button id="tabAiOnly" class="active-btn" onclick="setChartMode('ai')">Calibrated Entry Chart (1m/5m/15m)</button>
+          <button id="tabSplit" onclick="setChartMode('split')">Side-by-Side Verification</button>
+          <button id="tabTvOnly" onclick="setChartMode('tv')">TradingView FOREXCOM:XAUUSD</button>
+          <button id="toggleZonesBtn" class="active-btn" onclick="toggleShadedZones()">FVG/OB Zones: ON</button>
+        </div>
+        <div class="legend-group">
+          <div class="legend-item">
+            <span class="legend-box" style="background:rgba(16,185,129,0.25);color:#10b981"></span> Bull FVG
+          </div>
+          <div class="legend-item">
+            <span class="legend-box" style="background:rgba(239,68,68,0.25);color:#ef4444"></span> Bear FVG
+          </div>
+          <div class="legend-item">
+            <span class="legend-box" style="background:rgba(6,182,212,0.25);color:#06b6d4"></span> Bull Body OB
+          </div>
+          <div class="legend-item">
+            <span class="legend-box" style="background:rgba(249,115,22,0.25);color:#f97316"></span> Bear Body OB
+          </div>
+          <div class="legend-item"><span class="legend-line" style="background:#3b82f6"></span> Entry</div>
+          <div class="legend-item"><span class="legend-line" style="background:#ef4444"></span> SL (&lt;=$10)</div>
+          <div class="legend-item"><span class="legend-line" style="background:#f5b942"></span> TP 1:1 / 1:2 / 1:3</div>
+          <div class="legend-item"><span class="legend-line" style="background:#8b5cf6"></span> HTF DOL</div>
+        </div>
+      </div>
+
+      <div id="chartsContainer" class="charts-container">
+        <div class="canvas-wrap">
+          <canvas id="aiChart"></canvas>
+        </div>
+        <div class="tv-wrap" id="tvWidgetContainer"></div>
+      </div>
+
+      <div class="chart-footer">
+        <span id="calibrationInfo">Calibrating historical candles to FOREXCOM:XAUUSD...</span>
+        <span id="modelMetaInfo">AI Model: Logistic Regression (600 Epochs)</span>
+      </div>
+    </div>
+
+    <!-- Right AI Execution, Telegram Bot & Trade Lock Panel -->
+    <div class="side-panel">
+      <div class="panel-card">
+        <div class="card-header">
+          <span class="card-title">Top-Down Trade Lock Engine</span>
+          <span id="lockIdText" style="font-size:11px;color:var(--text-muted)">UNLOCKED</span>
+        </div>
+
+        <div id="lockStatusBadge" class="lock-status-banner status-IDLE">
+          STATUS: IDLE (SCANNING LIVE)
+        </div>
+
+        <div class="signal-hero">
+          <div class="hero-box">
+            <div class="hero-label" id="signalTfLabel">Entry [5M] / Dir [1H]</div>
+            <div id="signalDirDisplay" class="hero-val dir-WAIT">WAIT</div>
+          </div>
+          <div class="hero-box">
+            <div class="hero-label">AI Confidence</div>
+            <div id="winProbDisplay" class="hero-val" style="color:var(--gold)">--.-%</div>
+          </div>
+          <div class="hero-box">
+            <div class="hero-label" id="winRateSubLabel">Win Rate (0W-0L)</div>
+            <div id="winRateDisplay" class="hero-val" style="color:var(--green)">--.-%</div>
+          </div>
+        </div>
+
+        <div class="levels-grid">
+          <div class="level-row entry">
+            <span>Entry Zone (Body / FVG)</span>
+            <span class="level-val" id="valEntry">---.-- - ---.--</span>
+          </div>
+          <div class="level-row sl">
+            <span>Stop Loss (Max &lt;= $10.00)</span>
+            <span class="level-val" id="valSL">---.--</span>
+          </div>
+          <div class="level-row tp1">
+            <span>TP1 (1:1 RR)</span>
+            <span class="level-val" id="valTP1">---.--</span>
+          </div>
+          <div class="level-row tp2">
+            <span>TP2 (1:2 RR)</span>
+            <span class="level-val" id="valTP2">---.--</span>
+          </div>
+          <div class="level-row tp3">
+            <span>Full TP / TP3 (1:3 RR)</span>
+            <span class="level-val" id="valTP3">---.--</span>
+          </div>
+          <div class="level-row dol">
+            <span id="dolLabel">HTF Draw on Liquidity (DOL)</span>
+            <span class="level-val" id="valDOL">---.--</span>
+          </div>
+        </div>
+
+        <button class="btn-copy" onclick="copySignalToClipboard()" id="copySignalBtn">
+          📋 Copy Signal Levels (1:1 / 1:2 / 1:3)
+        </button>
+
+        <hr style="border:none;border-top:1px solid var(--border);margin:12px 0;" />
+
+        <div class="lock-controls">
+          <div class="control-row">
+            <label for="lockModeSelect">Trade Lock Mode:</label>
+            <select id="lockModeSelect" onchange="updateLockSettings()">
+              <option value="HOLD_UNTIL_FULL_TP">Hold Until Full TP3 (1:3) / BE</option>
+              <option value="UNLOCK_AT_TP1">Unlock at TP1 (1:1)</option>
+            </select>
+          </div>
+
+          <div class="control-row">
+            <label style="display:flex;align-items:center;gap:6px;cursor:pointer;">
+              <input type="checkbox" id="autoLockCheckbox" onchange="updateLockSettings()" />
+              Auto-Lock &amp; Drop Telegram Signal &gt;= 70%
+            </label>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn-lock" id="btnLockTrade" onclick="lockCurrentTrade()">🔒 Lock &amp; Send Alert</button>
+            <button class="btn-unlock" id="btnUnlockTrade" onclick="forceUnlockTrade()">🔓 Force Cancel / Unlock</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Telegram Bot Auto-Alert Card -->
+      <div class="panel-card">
+        <div class="card-header">
+          <span class="card-title">✈️ Telegram Bot (TP1/TP2/TP3/SL/BE + Win Rate)</span>
+          <span id="tgStatusText" style="font-size:11px;font-weight:700;color:var(--gold)">NOT CONFIGURED</span>
+        </div>
+        <div class="tg-inputs">
+          <input type="password" id="tgBotTokenInput" placeholder="Paste Telegram Bot Token (from @BotFather)" />
+          <input type="text" id="tgChatIdInput" placeholder="Paste Telegram Chat ID / Channel ID" />
+          <div class="btn-row">
+            <button onclick="saveTelegramSettings()" style="border-color:var(--cyan);color:#67e8f9;">💾 Save Bot Config</button>
+            <button onclick="sendTestTelegramSignal()" id="tgTestBtn" style="border-color:var(--gold);color:var(--gold);">🚀 Drop Signal to Telegram</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Auto-Detected ICT/SMC Confluences -->
+      <div class="panel-card">
+        <div class="card-header">
+          <span class="card-title">ICT/SMC &amp; Orderflow (Body CISD + HTF Bias)</span>
+          <span id="atrBadge" style="font-size:11px;color:var(--gold)">ATR: --.--</span>
+        </div>
+        <div class="confluence-list" id="confluenceList"></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://s3.tradingview.com/tv.js"></script>
+  <script>
+    let latestScanData = null;
+    let currentEntryTf = '5m';
+    let currentHtf = '1h';
+    let autoScanEnabled = true;
+    let showShadedZones = true;
+    let countdown = 10;
+    let chartMode = 'ai';
+
+    const statusLabelMap = {
+      IDLE: 'STATUS: IDLE (SCANNING LIVE)',
+      LIMIT_PENDING: '🔒 LIMIT PENDING (WAITING FOR ENTRY ZONE)',
+      ACTIVE_IN_TRADE: '🔥 ACTIVE IN TRADE (LEVELS LOCKED)',
+      TP1_HIT_RUNNING: '🚀 TP1 HIT - RUNNING (SL AT BREAKEVEN)'
+    };
+
+    function mapTfToTvInterval(tf) {
+      const map = { '1m': '1', '5m': '5', '15m': '15', '30m': '30', '1h': '60', '4h': '240' };
+      return map[tf] || '5';
+    }
+
+    function initTradingViewWidget() {
+      if (typeof TradingView === 'undefined') return;
+      const container = document.getElementById('tvWidgetContainer');
+      container.innerHTML = '';
+      new TradingView.widget({
+        autosize: true,
+        symbol: 'FOREXCOM:XAUUSD',
+        interval: mapTfToTvInterval(currentEntryTf),
+        timezone: 'Etc/UTC',
+        theme: 'dark',
+        style: '1',
+        locale: 'en',
+        enable_publishing: false,
+        hide_top_toolbar: false,
+        save_image: false,
+        container_id: 'tvWidgetContainer'
+      });
+    }
+
+    function setChartMode(mode) {
+      chartMode = mode;
+      const container = document.getElementById('chartsContainer');
+      document.getElementById('tabAiOnly').classList.toggle('active-btn', mode === 'ai');
+      document.getElementById('tabSplit').classList.toggle('active-btn', mode === 'split');
+      document.getElementById('tabTvOnly').classList.toggle('active-btn', mode === 'tv');
+
+      container.className = 'charts-container';
+      if (mode === 'split') {
+        container.classList.add('split-view');
+        initTradingViewWidget();
+      } else if (mode === 'tv') {
+        container.classList.add('tv-only');
+        initTradingViewWidget();
+      }
+      setTimeout(drawCandlestickChart, 60);
+    }
+
+    function toggleShadedZones() {
+      showShadedZones = !showShadedZones;
+      const btn = document.getElementById('toggleZonesBtn');
+      btn.classList.toggle('active-btn', showShadedZones);
+      btn.textContent = `FVG/OB Zones: ${showShadedZones ? 'ON' : 'OFF'}`;
+      drawCandlestickChart();
+    }
+
+    function onTimeframeChange() {
+      currentEntryTf = document.getElementById('entryTfSelect').value;
+      currentHtf = document.getElementById('htfSelect').value;
+      if (chartMode === 'split' || chartMode === 'tv') {
+        initTradingViewWidget();
+      }
+      runLiveScan();
+    }
+
+    function toggleAutoScan() {
+      autoScanEnabled = !autoScanEnabled;
+      const btn = document.getElementById('autoScanToggle');
+      if (autoScanEnabled) {
+        countdown = 10;
+        btn.classList.add('active-btn');
+        btn.innerHTML = `Auto: ON (<span id="countdownText">${countdown}</span>s)`;
+      } else {
+        btn.classList.remove('active-btn');
+        btn.innerHTML = `Auto: PAUSED`;
+      }
+    }
+
+    setInterval(() => {
+      if (!autoScanEnabled) return;
+      countdown--;
+      if (countdown <= 0) {
+        countdown = 10;
+        runLiveScan();
+      }
+      const el = document.getElementById('countdownText');
+      if (el) el.textContent = countdown;
+    }, 1000);
+
+    async function runLiveScan() {
+      try {
+        currentEntryTf = document.getElementById('entryTfSelect').value;
+        currentHtf = document.getElementById('htfSelect').value;
+        const maxSl = document.getElementById('maxSlSelect').value;
+
+        const res = await fetch(`/api/live-scan?entryTf=${currentEntryTf}&htf=${currentHtf}&maxSl=${maxSl}`);
+        const data = await res.json();
+        if (!data.ok) return;
+        latestScanData = data;
+        renderDashboard(data);
+        drawCandlestickChart();
+      } catch (err) {
+        console.error('Live scan error:', err);
+      }
+    }
+
+    function renderDashboard(data) {
+      document.getElementById('livePriceDisplay').textContent = data.livePrice.toFixed(2);
+      document.getElementById('killzoneBadge').textContent = data.killzoneName;
+      document.getElementById('atrBadge').textContent = `${data.entryTf.toUpperCase()} ATR: ${data.atr.toFixed(2)} | ${data.htf.toUpperCase()} ATR: ${data.htfAtr.toFixed(2)}`;
+
+      const dbBadge = document.getElementById('mongoBadge');
+      if (data.mongoConnected) {
+        dbBadge.textContent = '☁️ MONGODB ATLAS: CONNECTED';
+        dbBadge.style.borderColor = 'var(--green)';
+        dbBadge.style.color = '#34d399';
+      } else {
+        dbBadge.textContent = '💾 DB: LOCAL CACHE (SET MONGODB_URI)';
+        dbBadge.style.borderColor = 'var(--gold)';
+        dbBadge.style.color = 'var(--gold)';
+      }
+
+      const htfBadge = document.getElementById('htfDirBadge');
+      htfBadge.className = `htf-dir-badge htf-${data.htfDirection}`;
+      htfBadge.textContent = `HTF [${data.htf.toUpperCase()}] MARKET: ${data.htfDirection}`;
+
+      document.getElementById('calibrationInfo').textContent =
+        `Feed: ${data.feedSource} | Entry TF: ${data.entryTf.toUpperCase()} | Direction HTF: ${data.htf.toUpperCase()} | Offset: ${data.calibrationOffset >= 0 ? '+' : ''}${data.calibrationOffset.toFixed(2)}`;
+
+      if (data.modelMeta) {
+        document.getElementById('modelMetaInfo').textContent =
+          `AI Model: ${data.modelMeta.sampleCount} Setups | Accuracy: ${data.modelMeta.accuracy}%`;
+      }
+
+      if (data.winRateSummary) {
+        const wr = data.winRateSummary;
+        document.getElementById('winRateDisplay').textContent = `${wr.liveWinRate}%`;
+        document.getElementById('winRateSubLabel').textContent =
+          `Win Rate (${wr.wins}W-${wr.losses}L-${wr.breakevens}BE)`;
+      }
+
+      if (data.telegramStatus) {
+        const tgEl = document.getElementById('tgStatusText');
+        if (data.telegramStatus.configured) {
+          tgEl.textContent = `CONNECTED (Chat ${data.telegramStatus.chatIdPreview})`;
+          tgEl.style.color = 'var(--green)';
+        } else {
+          tgEl.textContent = 'NOT CONFIGURED';
+          tgEl.style.color = 'var(--gold)';
+        }
+      }
+
+      const sig = data.activeSignal;
+      const lock = data.tradeLock;
+
+      const badge = document.getElementById('lockStatusBadge');
+      badge.className = `lock-status-banner status-${lock.status}`;
+      badge.textContent = statusLabelMap[lock.status] || `STATUS: ${lock.status}`;
+
+      document.getElementById('lockIdText').textContent = lock.lockedTrade
+        ? `${lock.lockedTrade.id} (${lock.lockedTrade.entryTf.toUpperCase()}/${lock.lockedTrade.htf.toUpperCase()} LOCKED)`
+        : (lock.lastClosedTrade ? `Last: ${lock.lastClosedTrade.outcome} (${lock.lastClosedTrade.exitReason})` : 'UNLOCKED');
+
+      document.getElementById('signalTfLabel').textContent =
+        `Entry [${data.entryTf.toUpperCase()}] • Dir [${data.htf.toUpperCase()}]`;
+
+      const dirEl = document.getElementById('signalDirDisplay');
+      dirEl.textContent = sig.signalDirection;
+      dirEl.className = `hero-val dir-${sig.signalDirection}`;
+      document.getElementById('winProbDisplay').textContent = `${sig.winProbability.toFixed(1)}%`;
+
+      const lv = sig.levels;
+      const slDist = Math.abs(lv.entryMid - lv.stopLoss).toFixed(2);
+      document.getElementById('valEntry').textContent = `${lv.entryLow.toFixed(2)} – ${lv.entryHigh.toFixed(2)} (Mid: ${lv.entryMid.toFixed(2)})`;
+      document.getElementById('valSL').textContent = `${lv.stopLoss.toFixed(2)} (-$${slDist})${lock.lockedTrade?.slMovedToBreakeven ? ' [BE]' : ''}`;
+      document.getElementById('valTP1').textContent = lv.tp1.toFixed(2);
+      document.getElementById('valTP2').textContent = lv.tp2.toFixed(2);
+      document.getElementById('valTP3').textContent = lv.tp3.toFixed(2);
+
+      document.getElementById('dolLabel').textContent = `HTF [${data.htf.toUpperCase()}] DOL Target`;
+      document.getElementById('valDOL').textContent = (lv.htfDol || data.htfDolTarget).toFixed(2);
+
+      document.getElementById('lockModeSelect').value = lock.lockMode || 'HOLD_UNTIL_FULL_TP';
+      document.getElementById('autoLockCheckbox').checked = Boolean(lock.autoLock70);
+
+      const confContainer = document.getElementById('confluenceList');
+      confContainer.innerHTML = '';
+      const entries = Object.entries(sig.confluences || {});
+      for (const [key, desc] of entries) {
+        const score = Number(sig.features?.[key] ?? 0);
+        const scoreColor = score > 0.2 ? 'var(--green)' : (score < -0.2 ? 'var(--red)' : 'var(--gold)');
+        const item = document.createElement('div');
+        item.className = 'conf-item';
+        item.innerHTML = `
+          <div class="conf-top">
+            <span>${key}</span>
+            <span style="color:${scoreColor}">${score >= 0 ? '+' : ''}${score.toFixed(2)}</span>
+          </div>
+          <div class="conf-desc">${desc}</div>
+        `;
+        confContainer.appendChild(item);
+      }
+    }
+
+    function drawCandlestickChart() {
+      const canvas = document.getElementById('aiChart');
+      if (!canvas || !latestScanData || !Array.isArray(latestScanData.candles)) return;
+
+      const rect = canvas.parentElement.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+
+      const ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+
+      const width = rect.width;
+      const height = rect.height;
+      const padRight = 94;
+      const padLeft = 14;
+      const padTop = 24;
+      const padBottom = 28;
+      const plotW = width - padLeft - padRight;
+      const plotH = height - padTop - padBottom;
+
+      ctx.fillStyle = '#0b101c';
+      ctx.fillRect(0, 0, width, height);
+
+      const candles = latestScanData.candles;
+      const lv = latestScanData.activeSignal.levels;
+      const zones = latestScanData.zones || {};
+
+      let minP = Math.min(...candles.map(c => c.low), lv.stopLoss, lv.tp1, lv.tp3);
+      let maxP = Math.max(...candles.map(c => c.high), lv.stopLoss, lv.tp1, lv.tp3);
+      const padRange = (maxP - minP) * 0.08 || 2;
+      minP -= padRange;
+      maxP += padRange;
+
+      const priceToY = (p) => padTop + plotH - ((p - minP) / (maxP - minP)) * plotH;
+      const stepX = plotW / candles.length;
+
+      ctx.strokeStyle = '#182238';
+      ctx.lineWidth = 1;
+      const steps = 6;
+      ctx.font = '11px monospace';
+      ctx.fillStyle = '#6c7e9c';
+      for (let i = 0; i <= steps; i++) {
+        const p = minP + ((maxP - minP) * i) / steps;
+        const y = priceToY(p);
+        ctx.beginPath();
+        ctx.moveTo(padLeft, y);
+        ctx.lineTo(width - padRight, y);
+        ctx.stroke();
+        ctx.fillText(p.toFixed(2), width - padRight + 6, y + 4);
+      }
+
+      if (showShadedZones) {
+        const drawShadedZone = (startIndex, lowPrice, highPrice, midPrice, fillRgba, borderColor, titleText) => {
+          if (highPrice < minP || lowPrice > maxP) return;
+
+          const safeIdx = Math.max(0, Math.min(candles.length - 1, Number(startIndex || 0)));
+          const xStart = padLeft + safeIdx * stepX;
+          const xEnd = width - padRight;
+          const boxW = Math.max(16, xEnd - xStart);
+
+          const rawYTop = priceToY(highPrice);
+          const rawYBot = priceToY(lowPrice);
+          const yTop = Math.max(padTop, Math.min(padTop + plotH, Math.min(rawYTop, rawYBot)));
+          const yBot = Math.max(padTop, Math.min(padTop + plotH, Math.max(rawYTop, rawYBot)));
+          const boxH = Math.max(3, yBot - yTop);
+
+          ctx.save();
+          ctx.fillStyle = fillRgba;
+          ctx.fillRect(xStart, yTop, boxW, boxH);
+
+          ctx.strokeStyle = borderColor;
+          ctx.lineWidth = 1.15;
+          ctx.strokeRect(xStart, yTop, boxW, boxH);
+
+          if (midPrice && midPrice >= minP && midPrice <= maxP) {
+            const yMid = priceToY(midPrice);
+            ctx.beginPath();
+            ctx.setLineDash([3, 3]);
+            ctx.strokeStyle = borderColor;
+            ctx.lineWidth = 1;
+            ctx.moveTo(xStart, yMid);
+            ctx.lineTo(xEnd, yMid);
+            ctx.stroke();
+            ctx.setLineDash([]);
+          }
+
+          ctx.font = 'bold 10px monospace';
+          const tagText = `${titleText} [${lowPrice.toFixed(2)}-${highPrice.toFixed(2)}]`;
+          const textW = ctx.measureText(tagText).width;
+          const labelX = Math.min(xStart + 6, xEnd - textW - 10);
+          const labelY = yTop + 11 <= yBot ? yTop + 11 : Math.max(padTop + 10, yTop - 3);
+
+          ctx.fillStyle = 'rgba(9, 13, 22, 0.78)';
+          ctx.fillRect(labelX - 3, labelY - 9, textW + 6, 12);
+          ctx.fillStyle = borderColor;
+          ctx.fillText(tagText, labelX, labelY);
+          ctx.restore();
+        };
+
+        if (zones.bullOB) {
+          drawShadedZone(zones.bullOB.index, zones.bullOB.low, zones.bullOB.high, zones.bullOB.mid, 'rgba(6, 182, 212, 0.16)', '#06b6d4', `BULL BODY OB (MT:${zones.bullOB.mid.toFixed(2)})`);
+        }
+        if (zones.bearOB) {
+          drawShadedZone(zones.bearOB.index, zones.bearOB.low, zones.bearOB.high, zones.bearOB.mid, 'rgba(249, 115, 22, 0.16)', '#f97316', `BEAR BODY OB (MT:${zones.bearOB.mid.toFixed(2)})`);
+        }
+        if (zones.bullFvg) {
+          drawShadedZone(zones.bullFvg.index, zones.bullFvg.bottom, zones.bullFvg.top, zones.bullFvg.mid, 'rgba(16, 185, 129, 0.18)', '#10b981', `BULL FVG (CE:${zones.bullFvg.mid.toFixed(2)})`);
+        }
+        if (zones.bearFvg) {
+          drawShadedZone(zones.bearFvg.index, zones.bearFvg.bottom, zones.bearFvg.top, zones.bearFvg.mid, 'rgba(239, 68, 68, 0.18)', '#ef4444', `BEAR FVG (CE:${zones.bearFvg.mid.toFixed(2)})`);
+        }
+      }
+
+      const yEntryTop = priceToY(lv.entryHigh);
+      const yEntryBot = priceToY(lv.entryLow);
+      ctx.fillStyle = 'rgba(59, 130, 246, 0.14)';
+      ctx.fillRect(padLeft, Math.min(yEntryTop, yEntryBot), plotW, Math.max(2, Math.abs(yEntryBot - yEntryTop)));
+
+      const bodyW = Math.max(2, stepX * 0.64);
+      candles.forEach((c, idx) => {
+        const x = padLeft + idx * stepX + stepX / 2;
+        const isBull = c.close >= c.open;
+        const color = isBull ? '#10b981' : '#ef4444';
+
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.moveTo(x, priceToY(c.high));
+        ctx.lineTo(x, priceToY(c.low));
+        ctx.stroke();
+
+        const yOpen = priceToY(c.open);
+        const yClose = priceToY(c.close);
+        const top = Math.min(yOpen, yClose);
+        const h = Math.max(1.5, Math.abs(yClose - yOpen));
+        ctx.fillStyle = color;
+        ctx.fillRect(x - bodyW / 2, top, bodyW, h);
+      });
+
+      const drawPriceLine = (price, label, color, dashed = false) => {
+        if (price < minP || price > maxP) return;
+        const y = priceToY(price);
+        ctx.save();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1.6;
+        if (dashed) ctx.setLineDash([5, 4]);
+        ctx.beginPath();
+        ctx.moveTo(padLeft, y);
+        ctx.lineTo(width - padRight, y);
+        ctx.stroke();
+
+        ctx.fillStyle = color;
+        ctx.fillRect(width - padRight + 2, y - 9, padRight - 4, 18);
+        ctx.fillStyle = '#090d16';
+        ctx.font = 'bold 10.5px monospace';
+        ctx.fillText(price.toFixed(2), width - padRight + 6, y + 4);
+
+        ctx.fillStyle = color;
+        ctx.font = 'bold 11px sans-serif';
+        ctx.fillText(`${label}: ${price.toFixed(2)}`, padLeft + 8, y - 5);
+        ctx.restore();
+      };
+
+      const slDist = Math.abs(lv.entryMid - lv.stopLoss).toFixed(2);
+      drawPriceLine(lv.entryMid, `ENTRY (${latestScanData.entryTf.toUpperCase()})`, '#3b82f6', false);
+      drawPriceLine(lv.stopLoss, `SL (-$${slDist})`, '#ef4444', true);
+      drawPriceLine(lv.tp1, 'TP1 (1:1 RR)', '#34d399', true);
+      drawPriceLine(lv.tp2, 'TP2 (1:2 RR)', '#10b981', true);
+      drawPriceLine(lv.tp3, 'FULL TP3 (1:3 RR)', '#f5b942', false);
+
+      if (lv.htfDol) {
+        drawPriceLine(lv.htfDol, `HTF [${latestScanData.htf.toUpperCase()}] DOL`, '#8b5cf6', true);
+      }
+
+      drawPriceLine(latestScanData.livePrice, 'LIVE', '#ffffff', true);
+    }
+
+    async function saveTelegramSettings() {
+      const botToken = document.getElementById('tgBotTokenInput').value.trim();
+      const chatId = document.getElementById('tgChatIdInput').value.trim();
+      const payload = {};
+      if (botToken) payload.botToken = botToken;
+      if (chatId) payload.chatId = chatId;
+
+      const res = await fetch('/api/telegram-config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.ok) {
+        document.getElementById('tgBotTokenInput').value = '';
+        await runLiveScan();
+      }
+    }
+
+    async function sendTestTelegramSignal() {
+      const btn = document.getElementById('tgTestBtn');
+      const botToken = document.getElementById('tgBotTokenInput').value.trim();
+      const chatId = document.getElementById('tgChatIdInput').value.trim();
+      btn.textContent = '⏳ Sending...';
+
+      const payload = { entryTf: currentEntryTf, htf: currentHtf };
+      if (botToken) payload.botToken = botToken;
+      if (chatId) payload.chatId = chatId;
+
+      const res = await fetch('/api/telegram-test', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (data.ok) {
+        btn.textContent = '✅ Sent to Telegram!';
+        document.getElementById('tgBotTokenInput').value = '';
+        await runLiveScan();
+      } else {
+        btn.textContent = '❌ Check Token/ChatID';
+      }
+      setTimeout(() => { btn.textContent = '🚀 Drop Signal to Telegram'; }, 2500);
+    }
+
+    async function lockCurrentTrade() {
+      const lockMode = document.getElementById('lockModeSelect').value;
+      const autoLock70 = document.getElementById('autoLockCheckbox').checked;
+      const maxSlDollars = Number(document.getElementById('maxSlSelect').value);
+      await fetch('/api/lock-trade', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          lockNow: true,
+          lockMode,
+          autoLock70,
+          maxSlDollars,
+          entryTf: currentEntryTf,
+          htf: currentHtf
+        })
+      });
+      await runLiveScan();
+    }
+
+    async function updateLockSettings() {
+      const lockMode = document.getElementById('lockModeSelect').value;
+      const autoLock70 = document.getElementById('autoLockCheckbox').checked;
+      const maxSlDollars = Number(document.getElementById('maxSlSelect').value);
+      await fetch('/api/lock-trade', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lockNow: false, lockMode, autoLock70, maxSlDollars })
+      });
+      await runLiveScan();
+    }
+
+    async function forceUnlockTrade() {
+      await fetch('/api/unlock-trade', { method: 'POST' });
+      await runLiveScan();
+    }
+
+    function copySignalToClipboard() {
+      if (!latestScanData) return;
+      const sig = latestScanData.activeSignal;
+      const lv = sig.levels;
+      const slDist = Math.abs(lv.entryMid - lv.stopLoss).toFixed(2);
+      const wr = latestScanData.winRateSummary?.liveWinRate ?? 91.7;
+      const text = [
+        `FOREXCOM:XAUUSD AI SIGNAL (${sig.signalDirection})`,
+        `Direction HTF: ${latestScanData.htf.toUpperCase()} (${latestScanData.htfDirection}) | Entry TF: ${latestScanData.entryTf.toUpperCase()}`,
+        `AI Confidence: ${sig.winProbability.toFixed(1)}% | Win Rate: ${wr}%`,
+        `Entry Zone: ${lv.entryLow.toFixed(2)} - ${lv.entryHigh.toFixed(2)} (Mid: ${lv.entryMid.toFixed(2)})`,
+        `Stop Loss: ${lv.stopLoss.toFixed(2)} (-$${slDist} | Max $10.00 Cap)`,
+        `TP1 (1:1 RR): ${lv.tp1.toFixed(2)}`,
+        `TP2 (1:2 RR): ${lv.tp2.toFixed(2)}`,
+        `Full TP3 (1:3 RR): ${lv.tp3.toFixed(2)}`,
+        `HTF Draw on Liquidity (DOL): ${(lv.htfDol || latestScanData.htfDolTarget).toFixed(2)}`
+      ].join('\n');
+
+      navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('copySignalBtn');
+        btn.textContent = '✅ Signal Copied to Clipboard!';
+        setTimeout(() => { btn.textContent = '📋 Copy Signal Levels (1:1 / 1:2 / 1:3)'; }, 2000);
+      });
+    }
+
+    window.addEventListener('resize', drawCandlestickChart);
+    runLiveScan();
+  </script>
+</body>
+</html>

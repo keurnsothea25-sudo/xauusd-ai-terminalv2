@@ -1,0 +1,17 @@
+{
+  "name": "takeru-xauusd-ai-terminal",
+  "version": "3.0.0",
+  "description": "Standalone FOREXCOM:XAUUSD ICT/SMC AI Trading Terminal with Supabase/MySQL & Telegram Win Rate Alerts",
+  "main": "server.js",
+  "dependencies": {
+    "mysql2": "^3.11.0",
+    "pg": "^8.13.0"
+  },
+  "scripts": {
+    "build": "node train.js",
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
