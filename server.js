@@ -73,8 +73,8 @@ function loadTradeState() {
     if (typeof parsed.maxSlDollars !== 'number' || parsed.maxSlDollars > 10) {
       parsed.maxSlDollars = 10.0;
     }
-    if (!VALID_ENTRY_TFS.includes(parsed.defaultEntryTf)) parsed.defaultEntryTf = '5m';
-    if (!VALID_HTF_TFS.includes(parsed.defaultHtf)) parsed.defaultHtf = '1h';
+    if (!VALID_ENTRY_TFS.includes(parsed.defaultEntryTf)) parsed.defaultEntryTf = '1m';
+    if (!VALID_HTF_TFS.includes(parsed.defaultHtf)) parsed.defaultHtf = '15m';
     if (!parsed.stats) parsed.stats = defaultStats();
     return parsed;
   } catch (e) {
