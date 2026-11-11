@@ -1353,8 +1353,8 @@ const server = http.createServer(async (req, res) => {
 
   if (req.method === 'GET' && pathname === '/api/live-scan') {
     try {
-      const entryTf = VALID_ENTRY_TFS.includes(parsedUrl.query.entryTf) ? parsedUrl.query.entryTf : '5m';
-      const htf = VALID_HTF_TFS.includes(parsedUrl.query.htf) ? parsedUrl.query.htf : '1h';
+      const entryTf = VALID_ENTRY_TFS.includes(parsedUrl.query.entryTf) ? parsedUrl.query.entryTf : '1m';
+      const htf = VALID_HTF_TFS.includes(parsedUrl.query.htf) ? parsedUrl.query.htf : '15m';
 
       let tradeState = loadTradeState();
       tradeState.defaultEntryTf = entryTf;
