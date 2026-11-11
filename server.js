@@ -1294,13 +1294,13 @@ async function evaluateTradeLockLifecycle(tradeState, livePrice, latestScan, ent
 setInterval(async () => {
   try {
     let tradeState = loadTradeState();
-    const entryTf = tradeState.lockedTrade?.entryTf || tradeState.defaultEntryTf || '5m';
-    const htf = tradeState.lockedTrade?.htf || tradeState.defaultHtf || '1h';
+    const entryTf = tradeState.lockedTrade?.entryTf || tradeState.defaultEntryTf || '1m';
+    const htf = tradeState.lockedTrade?.htf || tradeState.defaultHtf || '15m';
     const marketData = await getDualTimeframeMarketData(entryTf, htf);
     const liveScan = analyzeICTSMCAndOrderflow(marketData, tradeState.maxSlDollars);
     await evaluateTradeLockLifecycle(tradeState, marketData.livePrice, liveScan, entryTf, htf);
   } catch (err) {}
-}, 15000);
+}, 5000);
 
 function parseJsonBody(req) {
   return new Promise((resolve) => {
