@@ -24,7 +24,7 @@ const ACTIVE_TRADE_PATH = path.join(DATA_DIR, 'active-trade.json');
 const TELEGRAM_CONFIG_PATH = path.join(DATA_DIR, 'telegram-config.json');
 
 const VALID_ENTRY_TFS = ['1m', '5m', '15m'];
-const VALID_HTF_TFS = ['30m', '1h', '4h'];
+const VALID_HTF_TFS = ['15m','30m', '1h', '4h'];
 
 if (!fs.existsSync(MODEL_PATH) || !fs.existsSync(EXAMPLES_PATH)) {
   trainModel(600);
@@ -52,8 +52,8 @@ function defaultTradeState() {
     lockMode: 'HOLD_UNTIL_FULL_TP', // UNLOCK_AT_TP1 | HOLD_UNTIL_FULL_TP
     autoLock70: true,
     maxSlDollars: 10.0,
-    defaultEntryTf: '5m',
-    defaultHtf: '1h',
+    defaultEntryTf: '1m',
+    defaultHtf: '15m',
     lockedTrade: null,
     lastClosedTrade: null,
     lastTelegramSignalSignature: null,
